@@ -1,0 +1,62 @@
+---
+title: "Inference Example, counts"
+author: "C. Durso"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+library(ggplot2)
+knitr::opts_chunk$set(echo = TRUE)
+library(HistData)
+```
+
+## Load Data
+
+```{r, results="asis",cache=TRUE}
+data("PolioTrials")
+dat<-PolioTrials
+#str(dat)
+kable(dat)
+```
+
+## Frame Question
+
+The basic question "did the vaccine work?" This can be answered in various ways. We would like to know whether the lower counts for the vaccinated population are consistent with chance, or whether there's evidence of a structural difference.
+
+Are the counts of paralytic polio cases consistent with the model that there were going to be `r sum(dat$Paralytic[1:2])` cases and these were randomly assigned to the "Vaccinated" and "Placebo" groups?
+
+## Test
+
+Take each case of paralytic polio and assign it to "Vaccinated" with probability equal to the proportion of vaccinated children in the study. Count the number assigned to "Vaccinated" and compare this with the observed number of polio cases in the "Vaccinated" group.
+
+Here, rbinom(n,ct,prop) is a function that models the number of random assignments to the distinguished group from a population of size "ct" if the probability of assignment to the distinguished group is "prop". The value of "n" is the number of times to repeat the experiment.
+
+
+
+```{r}
+n<-10000
+ct<-sum(dat$Paralytic[1:2])
+prop<-dat$Population[1]/sum(dat$Population[1:2])
+set.seed(45678765)
+sim3<-rbinom(n,ct,prop) 
+qplot(sim3)
+mean(sim3<=dat$Paralytic[1])
+```
+
+What does this say about the consistency of the observations with the chance model?
+(Is this the same as the first model?)
+
+
+
+
+
+
+
+
+
+
+
