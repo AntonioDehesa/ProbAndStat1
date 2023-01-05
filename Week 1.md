@@ -11,3 +11,17 @@ It can be statistically significant and not health significant, viceversa, both,
 
 ## What is a Statistic
 A statistic itself is just a number calculated from the data without the use of unknown parameters. It helps us answer questions about the data, or summarize aspects of it. But we need to know how well we know something. In other words, precision. 
+
+## Null hypothesis
+A hypothesis should be something that can be disproved. Once disproved, we can get alternative hypothesis. The null hypothesis claims that no difference or relationship exists between two sets of data or variables being analyzed. Any experimentally observed difference is due to chance alone, and an underlying causative relationship does not exist. 
+It can also be considered a "accepted fact", something to disprove. The "null" is for "nullyfiable". 
+
+## Alternative hypothesis
+Proving that the null hypothesis is incorrect does not guarantee that the alternative hypothesis is correct. 
+
+
+### Type 1 error
+When you reject the null hypothesis wrongly. 
+
+### Type 2 error
+When you do not rejet an incorrect null hypothesis. 

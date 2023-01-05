@@ -172,10 +172,19 @@ max(sim)
 ```
 
 A) Please respond yes or no. (your answer here)
-
+Yes
 
 B) Please support your response with values generated in the test of the probability model above.
-
+```{r}
+# Paralytic polio cases in the Vaccinated group in the reduced data
+dat.reduced$Paralytic[1]
+# Proportion of paralytic polio cases in the Vaccinated group in the scaled-down data
+dat.reduced$Paralytic[1] / sum(dat.reduced$Paralytic[1:2])
+# Paralytic polio cases in the pooled vaccinated and placebo group
+dat$Paralytic[1] / sum(dat$Population[1:2])
+# Ratio of the size of the vaccinated group to the size of pooled vaccinated and placebo group
+dat$Population[1] / sum(dat$Population[1:2])
+```
 
 ## Q1, part 3
 
