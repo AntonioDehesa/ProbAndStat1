@@ -21,6 +21,8 @@ They are standard in a computer science curriculum. And others are less familiar
 
 It consists of three components. 
 * The sample space: to be a discrete probability space, the sample space, the collection of possible outcomes of your probabilistic experiment, has to be finite or countable. That's what makes it a discrete probability space. Represented as an S. 
+All possible outcomes. In a coin flip, its heads and tails. 
+For a dice, its 1,2,3,4,5,6. 
 * The set of events, M, is a set of subsets of S. And that kind of works with natural language. If we say, well, what could happen in the event that thus and such happens-- so it kind of goes, a roll of the dice could add up to seven, eight, or nine, so that the event that we get a value between seven, eight, and nine-- among seven, eight, and nine is specified by a subset of the sum of rolling two dice.
 It has to fulfill some conditions: 
 The empty set and S itself must be elements of M. Not every set must be in M, but these two do. 
@@ -101,3 +103,46 @@ The cumulative density of standard normal will look like an s, with the middle b
 
 ## Normal distribution with parameters mu and sigma squared. 
 Very similar as the previous one, with a sigma squared inside the root, and x-sigma in the squared part. 
+
+
+# Class
+## Permutations
+
+All possible combinations
+A mathematical calculation of the number of ways a particular set can be arranged. 
+The order of arrangement matters. 
+
+## Degree of freedom
+
+The number of independent values that can vary in an analysis without breaking any constraints.
+
+### Example
+If we have five letters, A,B,C,D,E, and we can only arrange two of them at a time, how many ways can we arrange them? 
+We use the notation (n / k), where n = 5, k = 2. 
+Formula: 
+n! / ((n-k)!*k!)
+
+we have n elements: a,b,c,d,e
+We could have: 
+5*4, which would give us 20. 
+But this would generate the repeated A,b and b,a. 
+so we divide by 2!
+(n / k) = n!/((n-k)!*k!)
+
+## Theorems
+* (n/k) = (n/n-k)
+
+* n*(n-1/k-1) = k*(n/k)
+
+* (m+n / k) = sum from j = 0 to k of (m/j)*(n/n-j)
+## Bernoullis trials
+
+If you have two choices, and one happens with probability P, the other one must have 1-P. 
+
+## Binomial distribution
+
+How many times a possible event happens. 
+The probability would be the count of that thing happening, over the total number of events. 
+Probability of K successes in n trials.
+P(k,n) = (n/k)P^k*(1-p)^(n-k)
+
