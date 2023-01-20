@@ -1,0 +1,391 @@
+---
+title: "Problem Set 3"
+author: "Antonio Dehesa"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+library(knitr)
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(HistData)
+```
+
+# Introduction
+
+These questions were rendered in R markdown through RStudio (<https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf>, <http://rmarkdown.rstudio.com> ).
+
+Please generate your solutions in R markdown, without later editing, and upload both a knitted doc, docx, or pdf document in addition to the Rmd file. Please be sure that the knitted document displays the results of your calculations.
+
+The questions in this problem set use material from the slides on parameter estimation.
+
+# Question 1
+
+## Context
+
+We have seen that count $k$ of successes from $n$ Bernoulli trials is modeled as $Binomial(\textrm{size}=n, \textrm{probability}=p)$ then the maximum likelihood estimate of $p$ equals $\frac{k}{n}$. Suppose this is repeated $M$ times and $k_1$ successes are observed in $n_1$ Bernoulli trials, $k_2$ successes are observed in $n_2$ Bernoulli trials, and so on through $k_M$ successes in $n_M$ Bernoulli trials. The goal to find the maximum likelihood estimate of $p$ if these are modeled as samples from $Binomial(\textrm{size}=n_1, \textrm{probability}=p)$, $Binomial(\textrm{size}=n_2, \textrm{probability}=p)$, and so on through $Binomial(\textrm{size}=n_M, \textrm{probability}=p)$.
+
+## Q1, part 1
+
+(5 points)
+
+Consider the likelihood $L(k_1,k_2,...k_n)$ function for $\{k_1,k_2,...k_n\}$ as outcomes from $M$ independent binomial distributions $Binomial(\textrm{size}=n_1, \textrm{probability}=p),Binomial(\textrm{size}=n_2, \textrm{probability}=p), ...Binomial(\textrm{size}=n_M, \textrm{probability}=p)$.
+
+A) Please give the likelihood function $L(k_1,k_2,...k_n)$.
+M = Number of trials
+n = Each of the trials, one by one, from 1 to M
+As these are independent distributions, the solution would be the product of each individual distribution
+
+$L(k_1,k_2,...k_n) = \prod_{i=1}^{M}Binomial(n_i,p)$
+=
+$L(k_1,k_2,...k_n) = \prod_{i=1}^{M}C(n_{i},k_{i})p^{k_{i}}(1-p)^{n_{i}-k_{i}}$
+B) Please give the log of the likelihood function as a sum of terms of the form $\log\left[{n_i \choose k_i}p^{k_i}(1-p)^{n_i-k_i}\right]$
+$L(k_1,k_2,...k_n) = \prod_{i=1}^{M}C(n_{i},k_{i})p^{k_{i}}(1-p)^{n_{i}-k_{i}}$
+$\ln (L(k_1,k_2,...k_n)) = \ln\prod_{i=1}^{M}C(n_{i},k_{i})p^{k_{i}}(1-p)^{n_{i}-k_{i}}$
+$\ln (L(k_1,k_2,...k_n)) = \sum_{i=1}^{M}\ln (C(n_{i},k_{i})p^{k_{i}}(1-p)^{n_{i}-k_{i}})$
+## Q1, part 2
+
+(5 points)
+
+A) Please give the derivative with respect to $p$ of $\sum_{i=1}^M\left[\log{n_i \choose k_i}+k_i\log(p)+(n_i-k_i)\log(1-p)\right]$. (your answer here)
+If we consider $n_i \choose k_i$ as a constant, then the derivative would be 0. As we can see, it has no p terms, therefore, its a constant. 
+d/dp of log(p) = 1/p
+d/dp of (n_i-k_i)log(1-p) = We can consider n_i-k_i as constants, as they do not depend on p. Therefore, the derivative should be: 
+-(n_i-k_i)/(1-p)
+
+Therefore, the final result should be: 
+$\sum_{i=1}^M(\frac{1}{p} + \frac{k_i-n_i}{1-p})$
+
+B) Please give the value of $p$ that maximizes $\sum_{i=1}^M\left[\log{n_i \choose k_i}+k_i\log(p)+(n_i-k_i)\log(1-p)\right]$. (your answer here)
+
+$P = \frac{1}{\frac{-1}{M}*\sum_{i=1}^M(k_i-n_i) + 1}$
+## Q1, part 3
+
+(5 points)
+
+If the $M$ samples $\{k_1,k_2,...k_n\}$ from $M$ independent binomial distributions $Binomial(\textrm{size}=n_1, \textrm{probability}=p),Binomial(\textrm{size}=n_2, \textrm{probability}=p), ...Binomial(\textrm{size}=n_M, \textrm{probability}=p)$ are viewed as $\sum_{i=1}^Mk_i$ successes in $\sum_{i=1}^Mn_i$ independent Bernoulli trials with probability of success equal to $p$, what is the maximum likelihood estimate of $p$. (your answer here)
+####### Will check later
+# Question 2
+
+## Context
+
+The code below generates a sample, `samp1`, of size 10,000 from the $Binomial(\textrm{size}=20, \textrm{probability}=0.5)$ distribution and a sample, `samp2` of size 10,000 from the  $Binomial(\textrm{size}=50, \textrm{probability}=0.3)$ distribution.
+
+```{r}
+set.seed(12345)
+samp1<-rbinom(10000,20,.5)
+dat1<-data.frame(x=samp1)
+samp2<-rbinom(10000,50,.3)
+dat2<-data.frame(x=samp2)
+```
+
+## Q2, part 1
+
+(5 points)
+
+Please display separate histograms of `samp1` and `samp2` with binwidth equal to 1. (your code and plots here)
+
+```{r}
+ggplot(dat1, aes(x = samp1)) + 
+  geom_histogram(colour = 4, fill = "white", 
+                 binwidth = 1)
+```
+```{r}
+ggplot(dat2, aes(x = samp2)) + 
+  geom_histogram(colour = 4, fill = "white", 
+                 binwidth = 1)
+```
+
+## Q2, part 2
+
+(5 points)
+
+Treating `samp1` and `samp2` as samples from Normal distributions $Normal(\mu_1,\sigma_1^2)$ and $Normal(\mu_2,\sigma_2^2)$, please give maximum likelihood estimates of $\mu_1$, $\sigma_1^2$, $\mu_2$, and $\sigma_2^2$. (your answer here)
+
+## Answer Q2P2
+```{r}
+mu_1 = mean(samp1)
+mu_2 = mean(samp2)
+
+sigma_1 = sd(samp1)
+sigma_2 = sd(samp2)
+```
+
+
+## Q2, part 3
+
+(5 points)
+
+The plotting methods from  `continuous_probability_distributions_2_4_2.Rmd` and practice problem set 2 may be useful here.
+
+A) For `samp1` please display the density histogram with density curve for $Normal(\mu_1,\sigma_1^2)$ superimposed. (your code and plot here)
+
+```{r}
+plot_1<- ggplot(dat1, aes(x=x)) +
+        geom_histogram(aes(y = ..density..),binwidth=1) +
+        stat_function(fun = dnorm, colour = "orange",args = list(mean =mu_1, sd = sigma_1))+
+        stat_function(fun = pnorm, colour = "darkgreen",args = list(mean =mu_1, sd = sigma_1))
+plot_1
+```
+
+
+B) For `samp2` please display the density histogram with density curve for $Normal(\mu_2,\sigma_2^2)$ superimposed. (your code and plot here)
+```{r}
+plot_2<- ggplot(dat2, aes(x=x)) +
+        geom_histogram(aes(y = ..density..),binwidth=1) +
+        stat_function(fun = dnorm, colour = "orange",args = list(mean =mu_2, sd = sigma_2))+
+        stat_function(fun = pnorm, colour = "darkgreen",args = list(mean =mu_2, sd = sigma_2))
+plot_2
+```
+
+
+# Question 3
+
+Please carry out the analysis below and answer the questions that follow. For this assignment, please do all calculations in R and show the code and the results in the knit document. Some calculations that may be useful are shown. You are not required to use these.
+
+## Context
+
+In statistical analyses, there are some distributions that aren't Normal, but that can be well-approximated by Normal distributions. From the plots above, some binomial models appear to be good candidates.
+
+To examine this, we will view plots of binomial densities and corresponding Normal distributions for a collection of binomial distributions. We will also compute a measure of the error of approximating the binomial distribution by the corresponding Normal distribution.
+
+Above, we found an appropriate Normal distribution for a given binomial distribution by using maximum likelihood estimates of $\mu$ and $\sigma^2$ based on a sample from a binomial distribution. Here, we calculate the values of $\mu$ and $\sigma^2$ corresponding to the given binomial distribution under the assumption that the proportion of each outcome exactly equals that given by the density function for the binomial distribution.
+
+Suppose the binomial distribution is $Binomial(n,p)$. 
+The maximum likelihood estimate $\bar{x}=\frac{1}{M}\sum_{i=1}^{M}x_i$ for $\mu$ based on a sample $(x_1,...x_M)$ is replaced by $\sum_{k=0}^nkf(k)=\tilde{\mu}$ where $f$ is the density function for $Binomial(n,p)$. To see that this is reasonable, rewrite $\frac{1}{M}\sum_{i=1}^{M}x_i$ as $\sum_{k=0}^{n}\left(\frac{1}{M}\sum_{x_i=k}x_i\right)$. For large $M$, the value $k$ will occur approximately $f(k)M$ times in the sample $(x_1,...x_M)$, so the term $\frac{1}{M}\sum_{x_i=k}x_i$ is approximately  $\frac{1}{M}kf(k)M=kf(k)$.
+
+Similarly, The maximum likelihood estimate $\frac{1}{M}\sum_{i=1}^{M}(x_i-\bar{x})^2$ for $\sigma^2$ based on a sample $(x_1,...x_M)$ is replaced by $\sum_{k=0}^n(k-\tilde{\mu})^2f(k)$.
+
+The definition of a function to find the values of the parameters "mean" and "sd" for the Normal distribution corresponding to a binomial distribution with parameters "size"="sz" and "prob"="p" follows:
+
+```{r}
+normal.parameters.get<-function(sz,p){
+  mu<-sum(0:sz*dbinom(0:sz,sz,p))# weighted average of the binomial outcomes
+  sigma.sq<-sum((0:sz-mu)^2*dbinom(0:sz,sz,p))
+  return(c(mu,sqrt(sigma.sq)))
+}
+```
+
+
+The measure of the error used is the sum of the squared differences between the probability of an outcome $k$ under the binomial distribution and the probability of a value in $(k-0.5,k+0.5)$ under the corresponding Normal distribution.
+
+The definition follows of a function to find this sum of squared differences in probability for a binomial distribution with size parameter equal to "sz" and probability parameter equal to "pr" and the probabilities according to the corresponding Normal distribution:
+
+
+```{r}
+# Function to calculate a sum of square errors is estimating
+# a binomial distribution with parameters sz and pr
+# by a Normal distribution with parameters norm=(mean,sd) as computed by 
+# normal.parameters.get
+
+q1.approx<-function(sz.this,pr.this){
+  normal.params<-normal.parameters.get(sz.this,pr.this)
+  m<- normal.params[1] # mu
+  s<-normal.params[2] # sigma
+  # 0.5 below the binomial outcomes {0,1,...sz}
+  lower<-0:sz.this-.5
+  # 0.5 above the binomial outcomes {0,1,...sz}
+  upper<-0:sz.this+.5
+  # Probabilities under the Normal distribution
+  # for the events [k-.5,k+.5] for k in {0,1,...sz} 
+  normal.probs<-pnorm(upper,m,s)-pnorm(lower,m,s)
+  # Sum of the squares of the differences between 
+  # the probability of the event [k-.5,k+.5] under the Normal 
+  # distribution and the probability of k under the binomial
+  # distribution
+  error<-sum((normal.probs-dbinom(0:sz.this,sz.this,pr.this))^2)
+  return(error)
+}
+```
+
+For example, apply these to the performance of the Normal approximation for $Binomial(148,0.4994)$. These parameters were chosen based on the number of paralytic polio cases and the proportion of vaccinated children from the randomized control trial in the polio data.
+
+```{r}
+data("PolioTrials")
+dat<-PolioTrials
+sz<-sum(dat$Paralytic[1:2])
+prop<-dat$Population[1]/sum(dat$Population[1:2])
+normal.params<-normal.parameters.get(sz,prop)
+mu<-normal.params[1]
+sigma<-normal.params[2]
+
+# Plot only values of k that are at all likely.
+k<-qbinom(.00005,sz,prop):qbinom(.99995,sz,prop)
+
+# Make a data frame of these values of k, their probability under the binomial distribution, and under the estimated best Normal distribution.
+dat.est<-data.frame(k=k,bin.prob=dbinom(k,sz,prop),
+            norm.prob=pnorm((k)+0.5,mu,sigma)-pnorm((k)-0.5,mu,sigma))
+# Make a column plot for the binomial probabilities showing the Normal approximation.
+
+ggplot(dat.est, aes(x=k))+geom_col(aes(y=bin.prob))+
+  geom_point(aes(y=norm.prob))+
+  stat_function(fun=dnorm,args = list(mean =mu, sd = sigma))+
+  labs(title="Binomial(148,0.4994)")
+```
+
+The sum of squared differences in probabilities of the outcomes under the binomial model and under the Normal approximation: 
+
+```{r}
+q1.approx(sz,prop)
+
+```
+
+## Q3, part 1
+
+(5 points)
+
+Please provide the corresponding visualization $Binomial(10,0.5)$. What is the square error in approximating $Binomial(10,0.5)$ by a Normal distribution in this way?
+
+```{r}
+N <- 10
+dist<- dbinom(x=1:N, size = N, prob = 0.5)
+normal.params<-normal.parameters.get(N,0.5)
+mu<-normal.params[1]
+sigma<-normal.params[2]
+
+# Plot only values of k that are at all likely.
+k<-qbinom(.00005,N,0.5):qbinom(.99995,N,0.5)
+
+# Make a data frame of these values of k, their probability under the binomial distribution, and under the estimated best Normal distribution.
+dist.est<-data.frame(k=k,bin.prob=dbinom(k,N,0.5),
+            norm.prob=pnorm((k)+0.5,mu,sigma)-pnorm((k)-0.5,mu,sigma))
+# Make a column plot for the binomial probabilities showing the Normal approximation.
+
+ggplot(dist.est, aes(x=k))+geom_col(aes(y=bin.prob))+
+  geom_point(aes(y=norm.prob))+
+  stat_function(fun=dnorm,args = list(mean =mu, sd = sigma))+
+  labs(title="Binomial(10,0.5)")
+
+# Square error: 
+q1.approx(N,0.5)
+```
+
+## Q3, part 2
+
+(5 points)
+
+What is the square error in approximating Binomial(10,0.1) by a Normal distribution in this way? Binomial(10,0.9)? 
+
+```{r}
+# In this case, we do not need the visualization, so we will only show the square error
+# Binomial(10,0.1)
+N <- 10
+prob <- 0.1
+## Square error: 
+q1.approx(N,prob)
+
+# Binomial(10,0.9)
+N <- 10
+prob <- 0.9
+dist<- dbinom(x=1:N, size = N, prob = prob)
+normal.params<-normal.parameters.get(N,prob)
+## Square error: 
+q1.approx(N,prob)
+
+# The expected outcome for this is for them to be equal, as 1 = 0.1+0.9
+```
+## Q3, part 3
+(5 points)
+
+What is the square error in approximating Binomial(100,0.5) by a Normal distribution in this way? Binomial(100,0.1)? Binomial(100,0.9)? 
+```{r}
+# In this case, we do not need the visualization, so we will only show the square error
+# Binomial(100,0.5)
+N <- 100
+prob <- 0.5
+## Square error: 
+q1.approx(N,prob)
+
+# Binomial(100,0.1)
+N <- 100
+prob <- 0.1
+dist<- dbinom(x=1:N, size = N, prob = prob)
+normal.params<-normal.parameters.get(N,prob)
+## Square error: 
+q1.approx(N,prob)
+
+# Binomial(100,0.9)
+N <- 100
+prob <- 0.9
+dist<- dbinom(x=1:N, size = N, prob = prob)
+normal.params<-normal.parameters.get(N,prob)
+## Square error: 
+q1.approx(N,prob)
+```
+
+## Q3, part 4
+
+(5 points)
+
+For a fixed value of $size$, what condition on the $probability$ of $Binomial(size,probability)$ distribution makes the Normal approximation a better approximation? For a fixed value of $probability$, what conditions on the $size$ of $Binomial(size,probability)$ distribution makes the Normal approximation a better approximation? Please feel free to examine the results of values for the size and probability beyond those considered above.
+
+What can you say about the size of the error when the value of $size$ is large and the value of  $probability$ is near 0.5?
+
+```{r}
+# Fixed value of size, variable probability to reduce the error
+N<-100
+Prob <- seq(from=0, to = 1, by= 0.01)
+vec<-c() # We create an empty vector
+# Then, as q1.approx does not accept a list of elements as a parameter, we have to use a for loop
+for ( val in Prob){
+    vec<-c(vec, q1.approx(N, val))
+}
+#We sort it 
+vecSorted<-sort(vec)
+# Then we can look for the values with the highest error and their position in the vector, which can be directly related to the probability used to get this error
+highest<-match(tail(vecSorted, 10),vec)
+# Probabilities used:
+highest*0.01
+
+# lowest error
+lowest<-match(head(vecSorted,10),vec)
+lowest*0.01
+
+# With this, we can see that the highest error happens in the edges of the distribution, and the lowest error happens in the middle of the distribution
+ggplot(data.frame(vec),aes(x=Prob,y=vec))+
+  geom_col()+
+  labs(title="Estimation Error vs Probability")+
+  xlab("Estimation Error")+
+  ylab("Probability")
+```
+
+```{r}
+# Fixed probability, variable size
+Prob<-0.5
+N <- seq(from=1, to = 100, by= 1)
+vec<-c() # We create an empty vector
+# Then, as q1.approx does not accept a list of elements as a parameter, we have to use a for loop
+for ( val in N){
+    vec<-c(vec, q1.approx(val, Prob))
+}
+#We sort it 
+vecSorted<-sort(vec)
+# Then we can look for the values with the highest error and their position in the vector, which can be directly related to the N used to get this error
+highest<-match(tail(vecSorted, 10),vec)
+# N:
+highest
+
+# lowest error
+lowest<-match(head(vecSorted,10),vec)
+lowest
+
+# With this, we can see that the highest error happens within the first few elements, meaning that lower numbers = higher error.
+ggplot(data.frame(vec),aes(x=N,y=vec))+
+  geom_col()+
+  labs(title="Probability vs Estimation Error")+
+  xlab("Estimation Error")+
+  ylab("Probability")
+```
+
+For the final question, the previous graph shows us that with a high value of $size$ with $probability$ equal to 0.5, the error is very low. We can see that with a value of 100 and a probability of 0.5, the error is: 
+```{r}
+q1.approx(100,0.5)
+```
+while with n = 1000:
+```{r}
+q1.approx(1000,0.5)
+```
+The higher the n, the lower the error

@@ -135,12 +135,29 @@ This question concerns the uniform distribution on $[0,1]$, the continuous proba
 Are the events $A=\{s\in S|0\leq s \leq \frac{1}{2}\}$ and $B=\{s\in S|\frac{1}{4}\leq s \leq \frac{3}{4}\}$ independent. To answer this, please address the following questions:
 
 A) What is $\mathcal{P}(A)$? (your answer here)
+```{r}
+# P(A)
+pa<-punif(0.5,0,1)
+```
 
 B) What is $\mathcal{P}(B)$? (your answer here)
+```{r}
+# P(3/4) - P(1/4) = P([1/4,3/4])
+pb<-punif(3/4,0,1)-punif(1/4,0,1)
+```
 
 C) What is $\mathcal{P}(A\cap B)$? (your answer here)
+```{r}
+# Intersection of set A(0:0.5) and B(1/4:3/4) is R(1/4:1/2)
+panb<-punif(1/2,0,1)-punif(1/4,0,1)
+```
 
 D) Are the events $A$ and $B$ independent? (your answer here: please answer yes or no and explain your response using the calculations above.)
+```{r}
+# These should be independent if panb == pa*pb. 
+panb == pa*pb
+# As we can see, it fulfills the conditions, therefore, they are independent. 
+```
 
 # Question 3
 
@@ -157,14 +174,15 @@ Are the events $A=\{s\in S|0\leq s \leq \frac{1}{2}\}$ and $B=\{s\in S|\frac{1}{
 A) Please give a numerical approximation to $\mathcal{P}(A)$. (your answer here
 
 ```{r}
-
+# We can omit the parameters for the mean and sd, as they are, by default, 0 and 1 respectively, which are the values for the standard normal distribution
+psa<-pnorm(0.5)-pnorm(0)
 ```
 )
 
 
 B) Please give a numerical approximation to $\mathcal{P}(B)$? (your answer here
 ```{r}
-
+psb<-pnorm(3/4)-pnorm(1/4)
 ```
 )
 
@@ -172,18 +190,18 @@ B) Please give a numerical approximation to $\mathcal{P}(B)$? (your answer here
 
 C) Please give a numerical approximation to $\mathcal{P}(A\cap B)$. (your answer here
 ```{r}
-
+# In this case, if we cconsider A as the interval from 0 to 1/2, and B as the interval from 1/4 to 3/4, then their intersection should be from 1/4 to 1/2. 
+psanb<-pnorm(1/2)-pnorm(1/4)
 ```
 )
 
 D) Are the events $A$ and $B$ independent? (your answer here: please answer yes or no and explain your response using the calculations above.)
 
+```{r}
+psanb == psa*psb
+```
 
-
-
-
-
-
+As we can see, the condition is not fulfilled, therefore, the events are not independent. 
 
 
 
