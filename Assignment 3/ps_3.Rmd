@@ -35,6 +35,7 @@ We have seen that count $k$ of successes from $n$ Bernoulli trials is modeled as
 Consider the likelihood $L(k_1,k_2,...k_n)$ function for $\{k_1,k_2,...k_n\}$ as outcomes from $M$ independent binomial distributions $Binomial(\textrm{size}=n_1, \textrm{probability}=p),Binomial(\textrm{size}=n_2, \textrm{probability}=p), ...Binomial(\textrm{size}=n_M, \textrm{probability}=p)$.
 
 A) Please give the likelihood function $L(k_1,k_2,...k_n)$.
+
 M = Number of trials
 n = Each of the trials, one by one, from 1 to M
 As these are independent distributions, the solution would be the product of each individual distribution
@@ -51,23 +52,31 @@ $\ln (L(k_1,k_2,...k_n)) = \sum_{i=1}^{M}\ln (C(n_{i},k_{i})p^{k_{i}}(1-p)^{n_{i
 (5 points)
 
 A) Please give the derivative with respect to $p$ of $\sum_{i=1}^M\left[\log{n_i \choose k_i}+k_i\log(p)+(n_i-k_i)\log(1-p)\right]$. (your answer here)
+
 If we consider $n_i \choose k_i$ as a constant, then the derivative would be 0. As we can see, it has no p terms, therefore, its a constant. 
-d/dp of log(p) = 1/p
+d/dp of ki*log(p) = 1/p*ki = ki/p
 d/dp of (n_i-k_i)log(1-p) = We can consider n_i-k_i as constants, as they do not depend on p. Therefore, the derivative should be: 
 -(n_i-k_i)/(1-p)
 
 Therefore, the final result should be: 
-$\sum_{i=1}^M(\frac{1}{p} + \frac{k_i-n_i}{1-p})$
+$\sum_{i=1}^M(\frac{k_{i}}{p} + \frac{k_i-n_i}{1-p})$
 
 B) Please give the value of $p$ that maximizes $\sum_{i=1}^M\left[\log{n_i \choose k_i}+k_i\log(p)+(n_i-k_i)\log(1-p)\right]$. (your answer here)
 
-$P = \frac{1}{\frac{-1}{M}*\sum_{i=1}^M(k_i-n_i) + 1}$
+We get this result by using the property that sum of (a-b) = sum of a - sum of b to split sum of (k_i - n_i).
+With this, we can then get:
+$\frac{1-p}{p} = \frac{\sum_{i=1}^M(n_i)}{\sum_{i=1}^M(k_i)}-1$
+which would eventually lead us to the final result: 
+$P = \frac{\sum_{i=1}^M(k_i)}{\sum_{i=1}^M(n_i)}$
 ## Q1, part 3
 
 (5 points)
 
 If the $M$ samples $\{k_1,k_2,...k_n\}$ from $M$ independent binomial distributions $Binomial(\textrm{size}=n_1, \textrm{probability}=p),Binomial(\textrm{size}=n_2, \textrm{probability}=p), ...Binomial(\textrm{size}=n_M, \textrm{probability}=p)$ are viewed as $\sum_{i=1}^Mk_i$ successes in $\sum_{i=1}^Mn_i$ independent Bernoulli trials with probability of success equal to $p$, what is the maximum likelihood estimate of $p$. (your answer here)
-####### Will check later
+Basically, P: 
+$P = \frac{\sum_{i=1}^M(k_i)}{\sum_{i=1}^M(n_i)}$
+This P is already maximized, as it is the result we got from the previous question. 
+In summary, P = sum of k / sum of n, which is basically the same as k/n, which is the same as the one obtained in the slides. 
 # Question 2
 
 ## Context
@@ -112,6 +121,11 @@ mu_2 = mean(samp2)
 
 sigma_1 = sd(samp1)
 sigma_2 = sd(samp2)
+
+mu_1
+mu_2
+sigma_1
+sigma_2
 ```
 
 
@@ -125,7 +139,7 @@ A) For `samp1` please display the density histogram with density curve for $Norm
 
 ```{r}
 plot_1<- ggplot(dat1, aes(x=x)) +
-        geom_histogram(aes(y = ..density..),binwidth=1) +
+        geom_histogram(aes(y = after_stat(density)),binwidth=1) +
         stat_function(fun = dnorm, colour = "orange",args = list(mean =mu_1, sd = sigma_1))+
         stat_function(fun = pnorm, colour = "darkgreen",args = list(mean =mu_1, sd = sigma_1))
 plot_1
@@ -135,7 +149,7 @@ plot_1
 B) For `samp2` please display the density histogram with density curve for $Normal(\mu_2,\sigma_2^2)$ superimposed. (your code and plot here)
 ```{r}
 plot_2<- ggplot(dat2, aes(x=x)) +
-        geom_histogram(aes(y = ..density..),binwidth=1) +
+        geom_histogram(aes(y = after_stat(density)),binwidth=1) +
         stat_function(fun = dnorm, colour = "orange",args = list(mean =mu_2, sd = sigma_2))+
         stat_function(fun = pnorm, colour = "darkgreen",args = list(mean =mu_2, sd = sigma_2))
 plot_2

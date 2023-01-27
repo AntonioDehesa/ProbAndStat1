@@ -1,0 +1,269 @@
+---
+title: "Problem Set 4"
+author: "Antonio Dehesa"
+output:
+  word_document: default
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(knitr)
+library(ggplot2)
+```
+
+## Introduction
+
+Please complete the following tasks regarding the data in R. Please generate a solution document in R markdown and upload the .Rmd document and a rendered  .doc, .docx, or .pdf document.  Your work should be based  on the data's being in the same folder as the .Rmd file. Please turn in your work on Canvas. Your solution document should have your answers to the questions and should display the requested plots.
+
+These questions were rendered in R markdown through RStudio (<https://www.rstudio.com/wp-content/uploads/2015/02/rmarkdown-cheatsheet.pdf>, <http://rmarkdown.rstudio.com> ).
+
+# Question 1
+
+## Context
+
+Suppose $(S,M,P)_{\boldsymbol \theta}$ is a parametrized family of distributions. The parameter $\boldsymbol \theta$ may be vector-valued or one dimensional. Under fairly general circumstances, the maximum likelihood parameter estimate $\hat{\boldsymbol \theta}$ of the parameter $\boldsymbol \theta$ based on a sample $\{X_1,X_2,...X_n\}$ is *consistent*, also called *asymptotically consistent*. Informally, this means that as larger and larger samples are used to estimate the parameter, the estimate gets closer and closer to the true value. 
+
+Some parameter estimates are *unbiased*. Informally, this means that if the estimate is applied to $M$ samples of size $n$ to get a collection of estimates $\left\{\hat{\boldsymbol \theta}_1,\hat{\boldsymbol \theta}_2,...\hat{\boldsymbol \theta}_M\right\}$, the mean of the estimates, $\frac{1}{M}\sum_{i=1}^M\hat{\boldsymbol \theta}_i$ will get closer and closer to $\hat{\boldsymbol \theta}$ as $M$ gets larger and larger.
+
+In this question you will perform numerical experiments on samples from a $Normal(\mu,\sigma^2)$ distribution to see whether the maximum likelihood estimates for $\mu$ and $\sigma^2$ appear to be consistent and unbiased. 
+
+## Q1, part 1
+
+(5 points)
+
+The purpose of this question is to perform numerical experiments to gain insight into the whether of maximum likelihood estimates of $\mu$ and $\sigma^2$ are consistent for samples from $Normal(0,1)$. 
+
+The code provided generates $N=500,000$ samples $\{x_1,x_2,...x_N\}$ from the standard Normal distribution, $Normal(0,1)$. For each value $n$ in $\{1000,2000,3000,...N\}$, the maximum likelihood estimates of $\mu$ and $\sigma^2$ are computed for the initial portion $\{x_1,x_2,...x_n\}$ of the sample $\{x_1,x_2,...x_N\}$. These values are stored in order of $n$ in the data frame "dat.consist" with the variable names "mu.hat" and "sigma.sq.hat" respectively. A column of the corresponding values of $n$ is added under the variable name "n". Below you will use this data frame to examine whether these samples provide numerical evidence that the maximum likelihood estimates of $\mu$ and $\sigma^2$ are consistent. Plotting using "geom_line" may be helpful. 
+
+```{r cache=TRUE}
+set.seed(123456)
+N<-500000
+samp<-rnorm(N)
+# function to compute the maximum likelihood estimate of mu and the sigma-squared based on the first n values in a vector "samp" of samples from a Normal distribution:
+theta.est<-function(n,s=samp){
+  m<-mean(s[1:n])
+  s2<-sum((s[1:n]-m)^2)/n # 
+  return(c(m,s2))
+}
+dat.consist<-t(sapply(seq(1000,N,by=1000),theta.est, s=samp))
+dat.consist<-data.frame(dat.consist)
+dat.consist$n<-seq(1000,N,by=1000)
+names(dat.consist)<-c("mu.hat","sigma.sq.hat","n")
+```
+
+A) What is the true value of the parameter $\mu$ for these data? Please give a numeric value.
+The default parameter for the mean, which is mu, for rnorm is 0. We can see this with a histogram for the normal distribution of samp.  
+```{r}
+hist(samp, main = "Normal distribution")
+```
+```{r}
+# Our value should be 0
+act_mean<-mean(samp)
+# As we can see, it is very close to 0. But our actual value is $act_mean$
+```
+Our value should be 0
+actual mean = `r act_mean`
+As we can see, it is very close to 0. But our actual value is `r act_mean`
+
+B) Do the estimates of "mu.hat" of $\mu$ in "dat.consist" appear to approach the true value as the sample size "n" increases?
+
+
+```{r}
+ggplot(dat.consist,aes(x=n,y=mu.hat))+
+  geom_hline(yintercept = 0,color="gray")+
+  geom_line()
+  
+dat.consist$mu.hat[c(1,5,10,50,100,500)]
+```
+Yes, we can see that the bigger the n, the closer the estimated mu_hat is to the actual mean: 
+```{r}
+similarity <- tail(dat.consist$mu.hat, n=1) == act_mean
+```
+The last estimation, `tail(dat.consist$mu.hat, n=1)`, is equal to the actual mean,`act_mean`
+
+C) Does this numerical experiment suggest that the maximum likelihood estimate of $\mu$ is consistent?
+
+If I understood correctly, consistency is that, the more samples we have, the closer the estimate should be to the right value. This is what we observed in this case, so it should be consistent. 
+
+D) What is the true value of the parameter $\sigma^2$ for these data? Please give a numeric value.
+
+```{r}
+(act_sd_squared<-sd(samp)^2)
+```
+
+
+E) Do the estimates of "sigma.sq.hat" of $\sigma^2$ in "dat.consist" appear to approach the true value as the sample size "n" increases? If you are unsure, you can calculate the estimate for some very large samples.
+
+```{r}
+ggplot(dat.consist,aes(x=n,y=sigma.sq.hat))+
+  geom_hline(yintercept = min(dat.consist$sigma.sq.hat),color="gray")+
+  geom_line()
+  
+dat.consist$sigma.sq.hat[c(1,5,10,50,100,500)]
+```
+Yes, we can see in the graph that the more samples we have, the more it stabilizes to the real value. 
+F) Does this numerical experiment suggest that the maximum likelihood estimate of $\sigma^2$ is consistent?
+
+Using the same logic as in Q1, P1, C, yes, it should be consistent. 
+
+## Q1, part 2
+
+(5 points)
+
+The purpose of this question is to perform numerical experiments to gain insight into whether the maximum likelihood estimates of $\mu$ and $\sigma^2$ are unbiased for samples of size 5 from $Normal(0,1)$ 
+
+A) Create a $10,000\times5$ matrix of samples of size 5 from the standard Normal distribution. 
+
+```{r}
+set.seed(45678)
+mat<-matrix(rnorm(10000*5),ncol=5)
+```
+
+B) Please use `apply` to calculate the maximum likelihood estimates $\hat{\mu}$ and $\hat{\sigma}^2$  of $\mu$ and $\sigma^2$ for each sample.
+
+If by sample, we mean each value in each rowxcolumn cell, it is not possible to get the value, so I will do it by column instead. 
+```{r}
+N<-10000
+dat.consist<-t(apply(mat,2,theta.est, n=N))
+dat.consist<-data.frame(dat.consist)
+dat.consist$n<-seq(1,5,by=1)
+names(dat.consist)<-c("mu.hat","sigma.sq.hat","")
+```
+
+C) Compute the mean of the $\hat{\mu}$s and the mean of the $\hat{\sigma}^2$s.
+
+```{r}
+mat_mu_mean<-mean(dat.consist$mu.hat)
+mat_sigma_squared<-mean(dat.consist$sigma.sq.hat)
+```
+
+D) Does the maximum likelihood estimate of $\mu$ seem to be unbiased? (You may repeat the experiment with other seeds to help answer this question.)
+
+E) Does the maximum likelihood estimate of $\sigma^2$ seem to be unbiased? (You may repeat the experiment with other seeds to help answer this question. Try comparing with the adjusted estimates produced by dividing the sum of the squared differences by 4 instead of 5.)
+
+```{r}
+
+```
+
+```{r}
+rm(mat)
+```
+
+
+# Question 2
+
+## Context
+
+The uniform distributions are a two parameter family of continuous distributions, $Uniform(a,b)$ with $a,b\in\mathbb{R}$ and $a<b$. Given $(a,b)$, the sample space is $[a,b]$ and the probability density function is $f(x)=\frac{1}{b-a}$.
+
+
+## Q2, part 1
+
+(5 points)
+
+Please compute the mean of $Uniform(a,b)$.
+
+
+## Q2, part 2
+
+(5 points)
+
+Please compute the variance of $Uniform(a,b)$. The identity $$b^n-a^n=(b-a)\sum_{k=0}^{n-1}b^{n-1-k}a^k$$ 
+may be useful in simplifying the formula.
+ 
+
+# Question 3
+
+The data sets in these questions were downloaded 6/13/2022 from https://ourworldindata.org/ 
+
+The code chunks below read in a data frame of world populations and a data frame of world population densities. 
+
+```{r}
+dat.pop<-read.csv("population-since-1800.csv",stringsAsFactors = FALSE)
+names(dat.pop)[4]<-"population"
+dat.den<-
+  read.csv("population-density.csv")
+names(dat.den)[4]<-"density"
+```
+
+## Q3, part 1
+
+(2 points)
+
+Write code to restrict both data frames to cases in which the value of "Year" is 2020 and the value of "Code" is not the empty string, "", and is not the value for the whole world,"OWID_WRL". Please display the number of rows in the resulting data frames using the function `nrow`. 
+
+```{r} 
+
+```
+
+The following code merges the data sets, restricting to values of "Code" occurring in both data sets.
+
+```{r}
+dat.both<-inner_join(dat.den,dat.pop,by="Code")
+# check
+mean(dat.both$Entity.x==dat.both$Entity.y)
+```
+
+## Q3, part 2
+
+(3 points)
+
+Write code to find the four indices in "dat.both" at which the population takes on its minimum or maximum value and at which the density takes on its minimum or maximum value. Store the resulting indices in a vector named "inds". Use of the `which` function can simplify this effort. The functions `which.min` and `which.max` may also be used. Please display the "Entity.x" values of the identified rows. 
+
+```{r}
+
+```
+
+
+
+## Q3, part 3
+
+(3 points)
+
+Use "transmute" from dplyr to modify "dat.both" to be a data frame based on "dat.both", but with the value of "Entity.x" in a variable labeled "entity", the log of "density" in a variable labeled "den.log", and the log of "Population" in a variable labeled "pop.log" and no other variables. Please display first 5 rows of the new version of "dat.both". 
+
+```{r}
+
+```
+
+Create and display a data frame "dat.text" from dat.both that includes only the rows containing the extremes identified in question 3, part 2. 
+
+```{r}
+
+```
+
+
+## Q3, part 4
+
+(2 points)
+
+Use "ggplot" to create a point plot of the log of population (on the x-axis) versus the log of density. Store the plot in the variable g. Display the plot. 
+
+```{r}
+
+```
+
+The following should give the previous plot with the names of the entities having extreme population or extreme density, assuming that the result of the "transmute" call was stored back in "dat.both".
+
+```{r}
+# Please uncomment and run:
+# g<-g+
+#   geom_text(data=dat.text,aes(x=pop.log,y=den.log,label=entity))
+# g
+```
+
+### Q3, part 5
+
+(10 points)
+
+Please add the least squares best fit line with "pop.log" as the $x$-value and "den.log" as the $y$-value in $\mathbf{y}=m\mathbf{x}+b$. Also plot the line minimizing the squared error $\sum\left(x_i-(ly_i+c))^2\right)$ again with "pop.log" as the $x$-value and "den.log" as the $y$-value in such a way that the points $(x,y)$ on the line are related by $x=ly+c$. That is, if $f$ is the function giving "pop.log" as an affine function of "den.log", minimizing the square error  $\sum\left(x_i-(ly_i+c))^2\right)$, plot the inverse function $f^{-1}$. 
+
+```{r}
+
+```
+
+
+
