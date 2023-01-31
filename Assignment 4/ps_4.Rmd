@@ -82,7 +82,7 @@ Yes, we can see that the bigger the n, the closer the estimated mu_hat is to the
 ```{r}
 similarity <- tail(dat.consist$mu.hat, n=1) == act_mean
 ```
-The last estimation, `tail(dat.consist$mu.hat, n=1)`, is equal to the actual mean,`act_mean`
+The last estimation, `r tail(dat.consist$mu.hat, n=1)`, is equal to the actual mean,`r act_mean`
 
 C) Does this numerical experiment suggest that the maximum likelihood estimate of $\mu$ is consistent?
 
@@ -124,7 +124,7 @@ mat<-matrix(rnorm(10000*5),ncol=5)
 
 B) Please use `apply` to calculate the maximum likelihood estimates $\hat{\mu}$ and $\hat{\sigma}^2$  of $\mu$ and $\sigma^2$ for each sample.
 
-If by sample, we mean each value in each rowxcolumn cell, it is not possible to get the value, so I will do it by column instead. 
+If by sample, we mean by column. 
 ```{r}
 N<-10000
 dat.consist<-t(apply(mat,2,theta.est, n=N))
@@ -138,14 +138,26 @@ C) Compute the mean of the $\hat{\mu}$s and the mean of the $\hat{\sigma}^2$s.
 ```{r}
 mat_mu_mean<-mean(dat.consist$mu.hat)
 mat_sigma_squared<-mean(dat.consist$sigma.sq.hat)
+mat_mu_mean
+mat_sigma_squared
 ```
 
 D) Does the maximum likelihood estimate of $\mu$ seem to be unbiased? (You may repeat the experiment with other seeds to help answer this question.)
 
+Yes. We can see that, although the final result of mat_mu_mean is not as close to the real value as one of the individual values, I tried to get the mean of only two values, the mean for three values, the mean of four values, and finally, the mean of the five values. 
+Each step was closer to the real value. 
+Therefore, I believe that it is unbiased.  
+
 E) Does the maximum likelihood estimate of $\sigma^2$ seem to be unbiased? (You may repeat the experiment with other seeds to help answer this question. Try comparing with the adjusted estimates produced by dividing the sum of the squared differences by 4 instead of 5.)
 
-```{r}
+No. I tried as suggested, by testing with the mean of two values, 3, 4, and 5. 
+The results were inconsistent. From 2 to 3 there was an increase in the error. There was also an increase in the error from 3 to 4. Then, from 4 to 5 there was a decrease. Therefore, I believe that this is not unbiased. 
 
+```{r}
+sum(dat.consist$sigma.sq.hat[1:2])/2
+sum(dat.consist$sigma.sq.hat[1:3])/3
+sum(dat.consist$sigma.sq.hat[1:4])/4
+sum(dat.consist$sigma.sq.hat[1:5])/5
 ```
 
 ```{r}
@@ -166,6 +178,7 @@ The uniform distributions are a two parameter family of continuous distributions
 
 Please compute the mean of $Uniform(a,b)$.
 
+mean = (1/2)*(a+b)
 
 ## Q2, part 2
 
@@ -174,7 +187,7 @@ Please compute the mean of $Uniform(a,b)$.
 Please compute the variance of $Uniform(a,b)$. The identity $$b^n-a^n=(b-a)\sum_{k=0}^{n-1}b^{n-1-k}a^k$$ 
 may be useful in simplifying the formula.
  
-
+Variance = (1/12)*(b-a)^2
 # Question 3
 
 The data sets in these questions were downloaded 6/13/2022 from https://ourworldindata.org/ 
@@ -196,7 +209,10 @@ names(dat.den)[4]<-"density"
 Write code to restrict both data frames to cases in which the value of "Year" is 2020 and the value of "Code" is not the empty string, "", and is not the value for the whole world,"OWID_WRL". Please display the number of rows in the resulting data frames using the function `nrow`. 
 
 ```{r} 
-
+dat.pop<-filter(dat.pop, Year ==2020, Code != "", Code != "OWID_WRL")
+dat.den<-filter(dat.den, Year ==2020, Code != "", Code != "OWID_WRL")
+nrow(dat.pop)
+nrow(dat.den)
 ```
 
 The following code merges the data sets, restricting to values of "Code" occurring in both data sets.
@@ -214,7 +230,8 @@ mean(dat.both$Entity.x==dat.both$Entity.y)
 Write code to find the four indices in "dat.both" at which the population takes on its minimum or maximum value and at which the density takes on its minimum or maximum value. Store the resulting indices in a vector named "inds". Use of the `which` function can simplify this effort. The functions `which.min` and `which.max` may also be used. Please display the "Entity.x" values of the identified rows. 
 
 ```{r}
-
+inds<-c(which.min(dat.both$population),which.max(dat.both$population), which.min(dat.both$density), which.max(dat.both$density))
+dat.both$Entity.x[inds]
 ```
 
 
@@ -226,13 +243,15 @@ Write code to find the four indices in "dat.both" at which the population takes 
 Use "transmute" from dplyr to modify "dat.both" to be a data frame based on "dat.both", but with the value of "Entity.x" in a variable labeled "entity", the log of "density" in a variable labeled "den.log", and the log of "Population" in a variable labeled "pop.log" and no other variables. Please display first 5 rows of the new version of "dat.both". 
 
 ```{r}
-
+dat.both <- transmute(dat.both, entity = Entity.x, den.log = log(density), pop.log= log(population))
+head(dat.both, n=5)
 ```
 
 Create and display a data frame "dat.text" from dat.both that includes only the rows containing the extremes identified in question 3, part 2. 
 
 ```{r}
-
+dat.text <- dat.both[inds,]
+dat.text
 ```
 
 
@@ -243,16 +262,20 @@ Create and display a data frame "dat.text" from dat.both that includes only the 
 Use "ggplot" to create a point plot of the log of population (on the x-axis) versus the log of density. Store the plot in the variable g. Display the plot. 
 
 ```{r}
-
+g <- ggplot(dat.both, mapping = aes(x = pop.log, y = den.log)) +
+  geom_point()+
+  xlab("Log of the population")+
+  ylab("Log of the density of population")
+g
 ```
 
 The following should give the previous plot with the names of the entities having extreme population or extreme density, assuming that the result of the "transmute" call was stored back in "dat.both".
 
 ```{r}
 # Please uncomment and run:
-# g<-g+
-#   geom_text(data=dat.text,aes(x=pop.log,y=den.log,label=entity))
-# g
+ g<-g+
+   geom_text(data=dat.text,aes(x=pop.log,y=den.log,label=entity))
+ g
 ```
 
 ### Q3, part 5
@@ -262,8 +285,14 @@ The following should give the previous plot with the names of the entities havin
 Please add the least squares best fit line with "pop.log" as the $x$-value and "den.log" as the $y$-value in $\mathbf{y}=m\mathbf{x}+b$. Also plot the line minimizing the squared error $\sum\left(x_i-(ly_i+c))^2\right)$ again with "pop.log" as the $x$-value and "den.log" as the $y$-value in such a way that the points $(x,y)$ on the line are related by $x=ly+c$. That is, if $f$ is the function giving "pop.log" as an affine function of "den.log", minimizing the square error  $\sum\left(x_i-(ly_i+c))^2\right)$, plot the inverse function $f^{-1}$. 
 
 ```{r}
-
+y_bar <- mean(dat.both$den.log)
+x_bar <- mean(dat.both$pop.log)
+m<- (mean(dat.both$den.log*dat.both$pop.log) - y_bar*x_bar)/(mean(dat.both$pop.log^2) - x_bar^2)
+b <- mean(dat.both$den.log - m*dat.both$pop.log)
+f <- function(m,x,b){
+  return(m*x+b)
+}
+g2 <- g + geom_abline(slope=m,intercept = b)+
+  expand_limits(x = 5, y = 15)# Plot of y = mx + b
+g2
 ```
-
-
-
