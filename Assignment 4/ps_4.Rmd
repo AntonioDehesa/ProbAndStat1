@@ -285,14 +285,13 @@ The following should give the previous plot with the names of the entities havin
 Please add the least squares best fit line with "pop.log" as the $x$-value and "den.log" as the $y$-value in $\mathbf{y}=m\mathbf{x}+b$. Also plot the line minimizing the squared error $\sum\left(x_i-(ly_i+c))^2\right)$ again with "pop.log" as the $x$-value and "den.log" as the $y$-value in such a way that the points $(x,y)$ on the line are related by $x=ly+c$. That is, if $f$ is the function giving "pop.log" as an affine function of "den.log", minimizing the square error  $\sum\left(x_i-(ly_i+c))^2\right)$, plot the inverse function $f^{-1}$. 
 
 ```{r}
-y_bar <- mean(dat.both$den.log)
-x_bar <- mean(dat.both$pop.log)
-m<- (mean(dat.both$den.log*dat.both$pop.log) - y_bar*x_bar)/(mean(dat.both$pop.log^2) - x_bar^2)
-b <- mean(dat.both$den.log - m*dat.both$pop.log)
-f <- function(m,x,b){
-  return(m*x+b)
-}
-g2 <- g + geom_abline(slope=m,intercept = b)+
-  expand_limits(x = 5, y = 15)# Plot of y = mx + b
-g2
+coeffs<-lm(den.log~pop.log,data=dat.both)$coefficients
+coeffs.rev<-lm(pop.log~den.log,data=dat.both)$coefficients
+slope.rev<-1/coeffs.rev[2]
+intercept.rev<- (-coeffs.rev[1])/coeffs.rev[2]
+
+g<-g + geom_abline(slope=coeffs[2],intercept=coeffs[1],color="blue")
+g<-g +  geom_abline(slope=slope.rev,intercept=intercept.rev, color="orange")
+g
+
 ```
