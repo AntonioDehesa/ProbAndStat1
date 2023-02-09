@@ -87,3 +87,7 @@ Again this can be extended to random variables X1 through Xn if we simply requir
 
 
 nah, this subject lost me. 
+
+## Summary
+
+expectations: 
